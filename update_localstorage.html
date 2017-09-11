@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<h2>Importing and exporting data from Local Storage</h2>
+<p>The local web app version of drinkingdiary uses local web storage to store values.  This can be wiped out by browser resets, therefore we'd recommend you keep separate saves of your data. 
+
+<h2>Saving Data</h2>
+<p>Select the text in the box below, paste it in to a text file and save the file locally.
+
+<h2>Importing Data</h2>
+<p>Paste data in to the box below and click the button at the top of the box marked 'Update'</p>
+
+<script>
+function outputLocalStorage() {
+	var output = "";
+	if (localStorage) {
+	    if (localStorage.length) {
+	       for (var i = 0; i < localStorage.length; i++) {
+		   output += localStorage.key(i) + '::' + localStorage.getItem(localStorage.key(i)) + '\n';
+	       }
+	    } else {
+	       output += 'There is no data stored for this domain.';
+	    }
+	} else {
+	    output += 'Your browser does not support local storage.'
+	}
+	document.getElementById('lscontent').innerHTML = output;
+}
+function updateStorageValues() {
+	
+	// localStorage.clickcount = Number(localStorage.clickcount)+1;
+	input =  document.getElementById("lscontent").value;
+	// output = '';
+	var allEntries = input.split("\n");
+	for(var x in allEntries){  
+		var [key, value] = allEntries[x].split('::'); 
+		// localStorage.key = value;
+		localStorage.setItem(key, value);
+	}
+	// document.getElementById('localist').innerHTML = output;
+
+        outputLocalStorage();
+}
+
+</script>
+</head>
+<body>
+<pre id=localist></pre><br>
+<p><button onclick="updateStorageValues()" type="button">Update!</button></p>
+<textarea id='lscontent' cols=100 rows=30>
+</textarea>
+<script>window.onload = outputLocalStorage();</script>
+
+</body>
+</html>
+

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+.day {
+background-color:#f7f784;
+height:13px;
+width:13px;
+float:left;
+text-align:right;
+border-style:solid;
+border-color:#ffffff #ffffff;
+border-width:1px;
+}
+.daylabel {
+background-color:#ffffff;
+height:13px;
+width:13px;
+float:left;
+text-align:right;
+border-style:solid;
+border-color:#ffffff #ffffff;
+border-width:1px;
+}
+.colourscale {
+height:13px;
+width:8px;
+float:left;
+text-align:right;
+border-style:solid;
+border-color:#ffffff #ffffff;
+border-width:0px;
+}
+.colourscalelabel {
+background-color:#ffffff;
+height:13px;
+width:100px;
+float:left;
+text-align:middle;
+border-style:solid;
+border-color:#ffffff #ffffff;
+border-width:0px;
+}
+.monthlabel {
+background-color:#ffffff;
+height:13px;
+width:30px;
+float:left;
+font-family:verdana,helvetica,arial,sans-serif;
+font-size:10px;
+}
+.month {
+width:850px;
+float:left;
+font-family:verdana,helvetica,arial,sans-serif;
+font-size:10px;
+}
+</style>
+<title>Drinking Diary</title>
+
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/ui-darkness/jquery-ui.min.css" rel=stylesheet>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+  <script>
+  $( function() {
+    $( document ).tooltip();
+  } );
+  </script>
+  <style>
+  label {
+    display: inline-block;
+    width: 5em;
+  }
+  .ui-tooltip-content {
+    font-size:10pt;
+    font-family:verdana,helvetica,arial,sans-serif;
+  }
+  </style>
+
+</head>
+
+<div id="container" style="width:850px">
+	<div id="header" style="backgroud-color:#ffffff;">
+		<h2><span id="YearInView"></span> Drinking Diary</h2>
+	</div>
+	<div id="yearParent">
+	</div>
+	<div id="footer">
+		<span id="PrevYearInView"></span> --- <span id="NextYearInView"></span>
+	</div>
+</div>
+
+<div id="dialog-confirm" title="Details">
+	<span id=buttonPressed>Err.. don't know</span>
+</div>
+<p><a href=./update_localstorage.html target=_blank>back up / bulk import data set</a></p>
+<body>
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
+<script>
+function createYear(current_year) {
+	var existingContent = document.getElementById('yearParent');
+	while (existingContent.firstChild) existingContent.removeChild(existingContent.firstChild);
+
+	var next_year = +current_year+1;
+	var prev_year = +current_year-1;
+
+	var monthsArr={'0':'Jan','1':'Feb','2':'Mar','3':'Apr','4':'May','5':'Jun','6':'Jul','7':'Aug', '8':'Sep','9':'Oct','10':'Nov','11':'Dec'};
+	var daysPerMonth={'0':'31','1':'28','2':'31','3':'30','4':'31','5':'30','6':'31','7':'31', '8':'30','9':'31','10':'30','11':'31'};
+	var scaleLabels=['Clear','Good','Medium','High','Binge'];
+	// var colourWheel = ['99ffff','77ffff','55ffff','00ffff','00ffee','00ffcc','00ffbb','00ff99','00ff66','00FF00','10FF00', '30FF00','30FF00','40FF00','50FF00','89FF00','9FFF00','BFFF00','CFFF00','EFFF00','ffee00','FFCC00', 'FFAA00','FF8800','FF6600','FF4400','FF2200','FF0000','EF0000','DD0000','CC0000','cc0033','cc0044', 'cc0077','cc0099','aa0099','990099','770099','660099','440099','330099'];
+	var colourWheel = ['99ffff','77ffff','55ffff','33ffff','00ffff','00ffee','00ffdd','00ffcc','00ffbb','00ffaa', '00ff99','00ff66','00FF33','00FF00','10FF00','20FF00','30FF00','30FF00','40FF00','40FF00','50FF00', '75FF00','89FF00','9FFF00','AFFF00','BFFF00','CFFF00','DFFF00','EFFF00','ffee00','FFDD00','FFCC00', 'FFAA00','FF9900','FF8800','FF6600','FF5500','FF4400','FF2200','FF1100','FF0000','EF0000','EE0000', 'DD0000','CC0000','CC0011','cc0033','cc0044','cc0066','cc0077','cc0099','bb0099','aa0099','990099', '880099','770099','660099','550099','440099','330099','330099'];
+	if (current_year % 4 == 0) {
+		daysPerMonth['1']='29';
+	}
+	document.getElementById('YearInView').innerHTML = current_year;
+	document.getElementById('PrevYearInView').innerHTML = '<span title="previous year" onclick="createYear(\''+prev_year+'\')"><- '+prev_year+'</span>';
+	document.getElementById('NextYearInView').innerHTML = '<span title="next year" onclick="createYear(\''+next_year+'\')">'+next_year+' -></span>';
+
+	var label = 'bingescalelabel';
+	var listItem = document.createElement('div');
+	listItem.setAttribute('id', label);
+	listItem.setAttribute('class', 'month');
+	var monthLabel = document.createElement('div');
+	monthLabel.setAttribute('class', 'monthlabel');
+	document.getElementById('yearParent').appendChild(listItem);
+	document.getElementById(label).appendChild(monthLabel);
+
+	var colourslabel = 4;
+	for (var unit = 0; unit <= colourslabel; unit++) {
+		var day = document.createElement('div');
+		day.setAttribute('class', 'colourscalelabel');
+		var colourday = scaleLabels[unit];
+		day.appendChild(document.createTextNode(colourday));
+		document.getElementById(label).appendChild(day);
+	}
+
+	var label = 'bingescale';
+	var listItem = document.createElement('div');
+	listItem.setAttribute('id', label);
+	listItem.setAttribute('class', 'month');
+	var monthLabel = document.createElement('div');
+	monthLabel.setAttribute('class', 'monthlabel');
+	monthLabel.appendChild(document.createTextNode('Scale'));
+	document.getElementById('yearParent').appendChild(listItem);
+	document.getElementById(label).appendChild(monthLabel);
+
+	var colours = 60;
+	for (var unit = 1; unit <= colours; unit++) {
+		var day = document.createElement('div');
+		day.setAttribute('class', 'colourscale');
+		var colourday = colourWheel[unit];
+		day.setAttribute('style', 'background-color: #'+colourday+';');
+		document.getElementById(label).appendChild(day);
+	}
+
+	label = 'daysHeader';
+	var listItem = document.createElement('div');
+	listItem.setAttribute('id', label);
+	listItem.setAttribute('class', 'month');
+	var monthLabel = document.createElement('div');
+	monthLabel.setAttribute('class', 'monthlabel');
+	document.getElementById('yearParent').appendChild(listItem);
+	document.getElementById(label).appendChild(monthLabel);
+
+	var daysInMonth = 31;
+	for (var dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
+		var day = document.createElement('div');
+		day.setAttribute('class', 'daylabel');
+		day.appendChild(document.createTextNode(dayOfMonth));
+		document.getElementById(label).appendChild(day);
+	}
+	var headeravgs=['Avg','Off','Binge']
+	for (var dayOfMonth = 0; dayOfMonth <= 2; dayOfMonth++) {
+		var day = document.createElement('div');
+		day.setAttribute('class', 'daylabel');
+		day.appendChild(document.createTextNode(headeravgs[dayOfMonth]));
+		document.getElementById(label).appendChild(day);
+	}
+	
+
+	for(var i in monthsArr) {
+		var label = monthsArr[i];
+		var listItem = document.createElement('div');
+		listItem.setAttribute('id', label);
+		listItem.setAttribute('class', 'month');
+		var monthLabel = document.createElement('div');
+		monthLabel.setAttribute('id', 'month'+i);
+		monthLabel.setAttribute('class', 'monthlabel');
+		monthLabel.appendChild(document.createTextNode(label));
+		
+		document.getElementById('yearParent').appendChild(listItem);
+		document.getElementById(label).appendChild(monthLabel);
+		var daysInMonth = daysPerMonth[i];
+		var monthLabel = monthsArr[i];
+		var daysOff=0;
+		var daysCounted=0;
+		var totUnitsMonth=0;
+		var binges=0;
+		
+		for (var dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
+			var day = document.createElement('div');
+			day.setAttribute('id', current_year+'-'+i+'-'+dayOfMonth);
+			day.setAttribute('data-id', current_year+'-'+monthLabel+'-'+dayOfMonth);
+			day.setAttribute('class', 'day');
+			if(localStorage.getItem(current_year+'-'+label+'-'+dayOfMonth)) {
+				daysCounted=daysCounted+1;
+				var daycount = localStorage.getItem(current_year+'-'+label+'-'+dayOfMonth);
+				var dayavg = 0;
+				if (daycount > 0) {
+					dayavg = Math.round(daycount * 7);
+					// if (dayavg > 40) { dayavg = 40; binges+=1; }
+					if (dayavg > 60) { dayavg = 60; binges+=1; }
+					// totUnitsMonth+=Math.round(daycount);
+					totUnitsMonth+=parseFloat(daycount);
+					if(localStorage.getItem(current_year+'-'+label+'-'+dayOfMonth+'-desc')) {
+						dayDetailsDesc="<br>"+localStorage.getItem(current_year+'-'+label+'-'+dayOfMonth+'-desc');
+					} else {
+						dayDetailsDesc='';
+					}
+					dayDateStr=dayOfMonth+' '+monthLabel+' '+current_year;
+					toolTipStatement = dayDateStr+": "+daycount+" units "+dayDetailsDesc;
+					toolTipStatement = toolTipStatement.replace(/\<br\>/g, ' - ');
+					day.setAttribute('title', toolTipStatement); 
+
+				} else {
+					daysOff=daysOff+1;
+				}
+				var colourday = colourWheel[dayavg];
+				day.setAttribute('style', 'background-color: #'+colourday+';');
+			}
+			var d = new Date(current_year,i,dayOfMonth);
+			var dayOfWeek = d.getDay();
+			document.getElementById(label).appendChild(day);
+
+			if (dayOfWeek == 0 || dayOfWeek == 6) {
+				var weekend = document.createElement('sup');
+				weekend.appendChild(document.createTextNode('w'));
+				document.getElementById(current_year+'-'+i+'-'+dayOfMonth).appendChild(weekend);
+			}
+		}
+		var extras = 31 - daysInMonth;
+		for (var extra = 1; extra <= extras; extra++) {
+			var day = document.createElement('div');
+			day.setAttribute('class', 'day');
+			day.setAttribute('style', 'background-color: #ffffff;');
+			document.getElementById(label).appendChild(day);
+		}
+		if (daysCounted > 0) {
+			var avgBox=document.createElement('div');
+			avgBox.setAttribute('class', 'daylabel');
+			var avgBoxavg = 0;
+				// if (daycount > 0) {
+			var monthdayavg = ((totUnitsMonth / daysCounted) * 7);
+			avgBoxavg = Math.round(monthdayavg);
+			var monthAvgColour = avgBoxavg;
+			// if (avgBoxavg > 40) { monthAvgColour = 40;}
+			if (avgBoxavg > 60) { monthAvgColour = 60;}
+			var colourmonth = colourWheel[monthAvgColour];
+			avgBox.setAttribute('style', 'background-color: #'+colourmonth+';');
+
+			// avgBox.setAttribute('style', 'background-color: #000000;');
+			avgBox.appendChild(document.createTextNode(avgBoxavg));
+			document.getElementById(label).appendChild(avgBox);
+
+			var offBox=document.createElement('div');
+			offBox.setAttribute('class', 'daylabel');
+			offBox.appendChild(document.createTextNode(daysOff));
+			offBox.setAttribute('style', 'background-color: #99ffff;');
+			document.getElementById(label).appendChild(offBox);
+
+			var bingesBox=document.createElement('div');
+			bingesBox.setAttribute('class', 'daylabel');
+			bingesBox.appendChild(document.createTextNode(binges));
+			var bingesTotColour = binges*15;
+			// if (bingesTotColour > 40) { bingesTotColour = 40;}
+			if (bingesTotColour > 60) { bingesTotColour = 60;}
+			var colourBinges = colourWheel[bingesTotColour];
+			bingesBox.setAttribute('style', 'background-color: #'+colourBinges+';');
+			document.getElementById(label).appendChild(bingesBox);
+		}
+		$(".month").on("click", ".day", function(){
+			$("#dialog-confirm")
+				.data('id', this) // the important part .data() method
+				.dialog('open');
+				var idInScope = $(this).data('id');
+				var idInScopeDesc = idInScope+'-desc';
+				var existingEntry = localStorage.getItem(idInScope);
+				var existingEntryDesc = localStorage.getItem(idInScopeDesc);
+				var selector=returnUnitsSelect(existingEntry);
+				document.getElementById('buttonPressed').innerHTML = '<input type=hidden id=dayOfEntry value="'+idInScope+'">'+idInScope+'<br>units:'+selector+'<br>Desc:<br><textarea id=diaryEntryDesc>'+existingEntryDesc+'</textarea>';
+
+			function returnUnitsSelect(wotDrunk) {
+				// var wotDrunkOnes=0;
+				// var wotDrunkFractions=0;
+				var wotDrunkOnes = Math.floor(wotDrunk);
+   				var wotDrunkFractions = Math.ceil((wotDrunk - wotDrunkOnes)*10);
+
+				var selector = '<select id=diaryEntryOnes>';
+				for (var units_count=0; units_count <= 10; units_count++) {
+					selector=selector+'<option value="'+units_count+'"';
+					if(units_count==wotDrunkOnes){ selector=selector+' selected'; }
+					selector=selector+'>'+units_count+'</option> ';
+				}
+				selector=selector+'</select>';
+				selector=selector+'<select id=diaryEntryFractions>';
+				for (var units_count=0; units_count <= 9; units_count++) {
+					selector=selector+'<option value="'+units_count+'"';
+					if(units_count==wotDrunkFractions){ selector=selector+' selected'; }
+					selector=selector+'>.'+units_count+'</option> ';
+				}
+				selector=selector+'</select>';
+				// selector=selector+'<br>Ones: '+wotDrunkOnes+', Decimal: '+wotDrunkFractions;
+				return selector;
+			}
+
+		});
+	}
+}
+
+var current_year='2017';
+window.onload = createYear(current_year);
+
+
+$("#dialog-confirm").dialog({
+	autoOpen: false,
+	resizable: false,
+	height:300,
+	width:300,
+	modal: true,
+	buttons: {
+		Cancel: function() {
+			$(this).dialog('close');
+		},
+		'Update': function() {
+			var dEntryOnes = $("#diaryEntryOnes").val();
+			var dEntryFractions = $("#diaryEntryFractions").val();
+			var dEntryDesc = $("#diaryEntryDesc").val();
+			var dEntry = dEntryOnes+'.'+dEntryFractions;
+			var dateOfEntry = $("#dayOfEntry").val();
+			var dateOfEntryDesc = dateOfEntry+'-desc';
+			localStorage.setItem(dateOfEntryDesc, dEntryDesc);
+			localStorage.setItem(dateOfEntry, dEntry);
+			createYear(current_year);
+			$(this).dialog('close');
+		}
+	}
+});
+
+</script>
+
+<script type="text/javascript">
+var d = new Date()
+document.write("Copyright &copy;drinkingdiary.com "+d.getFullYear())
+</script>
+</body>
+</html>
