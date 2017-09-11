@@ -1,0 +1,79 @@
+<html>
+<head><title>Drinking Diary - monitor how much you drink, and reduce it</title>
+<link rel=stylesheet href=./fonts.css>
+<script type="text/javascript">
+
+function changeColor(id,color) {
+		var i;
+		for (i=1;i<=5;i++) {
+			document.getElementById(id+i).style.backgroundColor = color;
+		}
+	}	
+
+function changeSubColor(id,color) {
+		var i;
+		for (i=1;i<=6;i++) {
+			document.getElementById(id+i).style.backgroundColor = color;
+		}
+	}	
+
+function changeImages() {
+	if (document.images && (preloadFlag == true)) {
+		for (var i=0; i<changeImages.arguments.length; i+=2) 
+		{
+			document[changeImages.arguments[i]].src = changeImages.arguments[i+1];
+		}
+	}
+}
+</script>
+
+</head>
+<body>
+<div align="left">
+<table border=0><tr>
+<td rowspan=2><img src='/images/spacer.gif' width=20 height=10 rowspan=2></td>
+<td rowspan=2 valign=top>
+
+            <table width="165" border="0" cellpadding="0" cellspacing="0" summary="">
+				<tr><td colspan=4><img src='/images/spacer.gif' width=10 height=30></td></tr>
+                <tr>
+<td ><img src="/images/spacer.gif" width="9" height="1" alt="" border="0" /></td>
+<td ><img src="/images/spacer.gif" width="9" height="1" alt="" border="0" /></td>
+<td ><img src="/images/spacer.gif" width="138" height="1" alt="" border="0" /></td>
+<td ><img src="/images/spacer.gif" width="9" height="1" alt="" border="0" /></td>
+                </tr>
+
+            </table>
+</td>
+<td rowspan=2><img src=/images/spacer.gif width=20 height=10></td>
+<td width=700 align=left><a href=/><img src=/images/logo.gif width=185 height=25 border=0></a><img src=/images/spacer.gif width=515 height=25></td>
+<td rowspan=2><img src=/images/spacer.gif width=20 height=10></td></tr>
+<tr>
+<td width=700>
+
+<h2><!-- <img src=/images/beer_glass_fp.jpg align=right>--> Monitor how much alcohol you drink - 
+<ul>
+<li>daily, <li>weekly, <li>monthly
+
+</ul>
+<font color=red> - and reduce it!</font></h2>
+
+<p><b>drinkingdiary</b> html app enables users to calculate how many
+units they drink, and record this on a daily basis to see if their drinking is
+within healthy limits.  It provides weekly unit averages by week, month, and year periods
+so that users can if desired bring down the ammount they consume.
+
+<p>To get started, <b><a href=./drinkingdiary.zip>download app bundle</a></b>, unzip folder to your desktop and open the contained web page in your favourite browser.  Click on any day to enter the number of alcoholic units consumed - the diary will track your totals and averages from there on in.</p>
+<p><b>Existing Users:</b> Please see instructions on importing data from the old site <a href="./regular_user_instructions.html">here</a>.
+<p>To contact the webmaster, see <a href="./contact.html">here</a></p>
+<p><img src=/images/screenshot_fp_2010.gif width=679 height=179 border=0>.  
+
+</td>
+</tr>
+<tr><td colspan=5><img src=/images/spacer.gif width=20 height=15></td></tr>
+
+
+</table>
+</div>
+</body></html>
+
