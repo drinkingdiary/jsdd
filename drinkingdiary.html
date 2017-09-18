@@ -298,7 +298,7 @@ function createYear(current_year) {
    				var wotDrunkFractions = Math.ceil((wotDrunk - wotDrunkOnes)*10);
 
 				var selector = '<select id=diaryEntryOnes>';
-				for (var units_count=0; units_count <= 10; units_count++) {
+				for (var units_count=0; units_count <= 20; units_count++) {
 					selector=selector+'<option value="'+units_count+'"';
 					if(units_count==wotDrunkOnes){ selector=selector+' selected'; }
 					selector=selector+'>'+units_count+'</option> ';
